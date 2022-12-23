@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// 登录方法
 login(String username, password) async {
   try {
     password =
@@ -20,15 +21,10 @@ login(String username, password) async {
       ..validateStatus = (int? status) {
         return status != null && status > 0;
       }
-      ..headers = {
-        HttpHeaders.userAgentHeader: 'dio',
-        'common-header': 'xx',
-      };
+      ..headers = {};
     dio.interceptors
       ..add(InterceptorsWrapper(
         onRequest: (options, handler) {
-          // return handler.resolve( Response(data:"xxx"));
-          // return handler.reject( DioError(message: "eh"));
           return handler.next(options);
         },
       ))
@@ -40,7 +36,6 @@ login(String username, password) async {
     Map<String, dynamic> data = response.data;
     await prefs.setString('userToken', data['data']['token']);
     // ignore: prefer_typing_uninitialized_variables
-    // var formalData;
     return data;
   } catch (e) {
     print('登录异常$e');
@@ -50,6 +45,7 @@ login(String username, password) async {
   }
 }
 
+//获取用户信息
 getUserInfo() async {
   try {
     final prefs = await SharedPreferences.getInstance();
@@ -66,24 +62,17 @@ getUserInfo() async {
       ..validateStatus = (int? status) {
         return status != null && status > 0;
       }
-      ..headers = {
-        HttpHeaders.userAgentHeader: 'dio',
-        'common-header': 'xx',
-        'x-access-token': token
-      };
+      ..headers = {'x-access-token': token};
     dio.interceptors
       ..add(InterceptorsWrapper(
         onRequest: (options, handler) {
-          // return handler.resolve( Response(data:"xxx"));
-          // return handler.reject( DioError(message: "eh"));
           return handler.next(options);
         },
       ))
       ..add(LogInterceptor(responseBody: false));
     response = await dio.get('/userInfo');
     print('登录用户信息 ${response.data}');
-    await prefs.setString('userInfo', response.data['data']);
-    // TODO: 保存用户信息
+    await prefs.setString('userInfo', jsonEncode(response.data['data']));
     Map<String, dynamic> data = response.data;
     return data;
   } catch (e) {
@@ -94,15 +83,14 @@ getUserInfo() async {
   }
 }
 
-void logout() async {
+// 注销用户
+logout() async {
   try {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('userToken');
-    print('token$token');
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
     var requestPort = prefs.getString('requestPort') ?? '3000';
     var url = 'http://$requestIp:${requestPort}/api';
-    Response response;
     Dio dio = Dio();
     dio.options
       ..baseUrl = url
@@ -111,16 +99,10 @@ void logout() async {
       ..validateStatus = (int? status) {
         return status != null && status > 0;
       }
-      ..headers = {
-        HttpHeaders.userAgentHeader: 'dio',
-        'common-header': 'xx',
-        'x-access-token': token
-      };
+      ..headers = {'x-access-token': token};
     dio.interceptors
       ..add(InterceptorsWrapper(
         onRequest: (options, handler) {
-          // return handler.resolve( Response(data:"xxx"));
-          // return handler.reject( DioError(message: "eh"));
           return handler.next(options);
         },
       ))
@@ -128,7 +110,12 @@ void logout() async {
     await dio.get('/logout');
     await prefs.remove('userToken');
     await prefs.remove('userInfo');
+    Map<String, dynamic> data = {'data': '注销成功'};
+    return data;
   } catch (e) {
     print('注销用户异常$e');
+    // ignore: prefer_typing_uninitialized_variables
+    Map<String, dynamic> error = {'error': e};
+    return error;
   }
 }

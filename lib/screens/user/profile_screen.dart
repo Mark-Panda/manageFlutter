@@ -1,11 +1,41 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:manager_flutter/api/login.dart';
-
 import 'package:manager_flutter/commons/side_menu.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String _username = "_", _workCenter = "_";
+
+  _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? userInfo = prefs.getString('userInfo');
+    if (userInfo != null) {
+      Map info = jsonDecode(userInfo);
+      _username = info['name'];
+      _workCenter = info['name'];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        _load();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,20 +57,20 @@ class ProfilePage extends StatelessWidget {
             title: const Text('昵称'),
             trailing: Wrap(
               spacing: 12, // space between two icons
-              children: const <Widget>[
-                Text('wang'), // icon-1
+              children: <Widget>[
+                Text(_username), // icon-1
               ],
             ),
           ),
-          ListTile(
-            title: const Text('部门'),
-            trailing: Wrap(
-              spacing: 12, // space between two icons
-              children: const <Widget>[
-                Text('wang'), // icon-1
-              ],
-            ),
-          ),
+          // ListTile(
+          //   title: const Text('部门'),
+          //   trailing: Wrap(
+          //     spacing: 12, // space between two icons
+          //     children: <Widget>[
+          //       Text(_workCenter), // icon-1
+          //     ],
+          //   ),
+          // ),
           ListTile(
             // leading: const Icon(
             //   Icons.article_outlined,
@@ -49,12 +79,12 @@ class ProfilePage extends StatelessWidget {
             title: const Text('当前工作中心'),
             trailing: Wrap(
               spacing: 12, // space between two icons
-              children: const <Widget>[
-                Text('wang'), // icon-1
+              children: <Widget>[
+                Text(_workCenter), // icon-1
               ],
             ),
           ),
-          const Padding(padding: EdgeInsets.only(top: 30)),
+          const Padding(padding: EdgeInsets.only(top: 60)),
           // const Divider(
           //   indent: 40,
           //   endIndent: 40,
@@ -66,9 +96,15 @@ class ProfilePage extends StatelessWidget {
               '退出登录',
               textAlign: TextAlign.center,
             ),
-            onTap: () {
-              logout();
-              context.go('/login');
+            onTap: () async {
+              Map resData = await logout();
+              if (resData['data'] != null) {
+                // ignore: use_build_context_synchronously
+                context.go('/login');
+              } else {
+                Fluttertoast.showToast(
+                    msg: "网络异常", backgroundColor: Colors.red);
+              }
             },
           ),
         ],

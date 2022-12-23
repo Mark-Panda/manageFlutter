@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:manager_flutter/screens/login/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:manager_flutter/api/login.dart';
+import 'package:manager_flutter/screens/login/login_screen.dart';
 import 'package:manager_flutter/commons/side_menu.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,8 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // ignore: prefer_typing_uninitialized_variables
-  late int loginState;
+  int? loginState;
   @override
   void initState() {
     super.initState();
@@ -23,8 +23,18 @@ class _HomePageState extends State<HomePage> {
   Future _validateLogin() async {
     Future future = Future(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      return prefs.getString("userToken");
+      // 不止判断token还要判断token是否能正常获取用户信息
+      var currentToken = prefs.getString("userToken");
+      if (currentToken != null) {
+        // 请求获取用户信息接口
+        Map resData = await getUserInfo();
+        if (resData['data'] != null) {
+          return prefs.getString("userToken");
+        } else {
+          return null;
+        }
+      }
+      return null;
     });
 
     future.then((val) {
