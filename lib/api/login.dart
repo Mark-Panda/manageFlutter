@@ -1,17 +1,30 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypt/encrypt.dart';
+// ignore: depend_on_referenced_packages
+import 'package:pointycastle/asymmetric/api.dart';
 
 // 登录方法
 login(String username, password) async {
   try {
-    password =
-        "jlATLPKbqovsF5bSz4pc5NFyfLIcRRb974R7V1RLnUiYJPJACUhZQ8Z50CCfIUzUXfKFERizMAS0FdXm9S71iGvs2ozeI+SYQyLFoD+bY82CSjfYthofchjSxDdtBtDBSF1Wg70GLxnM5/u+Hnx9nMQdkIdB0DrYUClFpZjz040=";
-    username = "wang";
+    // 公钥导入
+    final publicPem = await rootBundle.loadString('assets/pki/public.pem');
+    final publicKey = RSAKeyParser().parse(publicPem) as RSAPublicKey;
+    // 私钥导入
+    final privPem = await rootBundle.loadString('assets/pki/private.pem');
+    final privKey = RSAKeyParser().parse(privPem) as RSAPrivateKey;
+    // RSA加密
+    final encrypter = Encrypter(RSA(publicKey: publicKey, privateKey: privKey));
+    final encryptedPwd = encrypter.encrypt(password);
+    // print(encryptedPwd.base64);
+    // final decrypted = encrypter.decrypt(encryptedPwd);
+    // print(decrypted);
     final prefs = await SharedPreferences.getInstance();
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
     var requestPort = prefs.getString('requestPort') ?? '3000';
-    var url = 'http://$requestIp:${requestPort}/api';
+    var url = 'http://$requestIp:$requestPort/api';
     Response response;
     Dio dio = Dio();
     dio.options
@@ -30,7 +43,7 @@ login(String username, password) async {
       ))
       ..add(LogInterceptor(responseBody: false));
     response = await dio.post('/login',
-        data: {'username': username, 'password': password},
+        data: {'username': username, 'password': encryptedPwd.base64},
         options: Options(contentType: Headers.jsonContentType));
     print('登录返回结果Token ${response.data}');
     Map<String, dynamic> data = response.data;
@@ -52,7 +65,7 @@ getUserInfo() async {
     var token = prefs.getString('userToken');
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
     var requestPort = prefs.getString('requestPort') ?? '3000';
-    var url = 'http://$requestIp:${requestPort}/api';
+    var url = 'http://$requestIp:$requestPort/api';
     Response response;
     Dio dio = Dio();
     dio.options
@@ -90,7 +103,7 @@ logout() async {
     var token = prefs.getString('userToken');
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
     var requestPort = prefs.getString('requestPort') ?? '3000';
-    var url = 'http://$requestIp:${requestPort}/api';
+    var url = 'http://$requestIp:$requestPort/api';
     Dio dio = Dio();
     dio.options
       ..baseUrl = url

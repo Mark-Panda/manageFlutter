@@ -1,16 +1,5 @@
-# manager_flutter
+# 管理类APP
 
-A new Flutter project.
+> 主要用于企业内生产的APP，用于内网环境，因此配置了网络设置，可以定义请求的IP和端口。
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> RSA公钥私钥未上传, 执行时需要在`assets/pki`文件夹下创建`public.pem` 和 `private.pem` 文件，没有`pki`文件夹创建对应的文件夹。

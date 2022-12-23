@@ -90,13 +90,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildEmailTextField() {
     return TextFormField(
       decoration: const InputDecoration(labelText: '用户名'),
-      // validator: (v) {
-      //   var emailReg = RegExp(
-      //       r"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?");
-      //   if (!emailReg.hasMatch(v!)) {
-      //     return '请输入正确的邮箱地址';
-      //   }
-      // },
+      validator: (v) {
+        var userNameReg = RegExp(r"^[\d\w-_]{4,16}$");
+        if (!userNameReg.hasMatch(v!)) {
+          return '请输入正确的用户名(4-16位、字母、数字、下划线、减号)';
+        }
+      },
       onSaved: (v) => _username = v!,
     );
   }
@@ -106,8 +105,9 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: _isObscure, // 是否显示文字
         onSaved: (v) => _password = v!,
         validator: (v) {
-          if (v!.isEmpty) {
-            return '请输入密码';
+          var pwdReg = RegExp(r"^[\d\w-_]{1,16}$");
+          if (!pwdReg.hasMatch(v!)) {
+            return '请输入正确的密码(1-16位、字母、数字、下划线、减号)';
           }
         },
         decoration: InputDecoration(

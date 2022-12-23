@@ -42,8 +42,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_svg: ^1.1.6
   google_fonts: ^3.0.1
-  json_serializable: ^6.5.4
-  json_annotation: ^4.7.0
+  encrypt: ^5.0.1
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +73,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/pki/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

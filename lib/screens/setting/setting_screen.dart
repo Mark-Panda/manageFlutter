@@ -34,13 +34,7 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('网络请求配置'),
-        // leading: IconButton(
-        //   icon: const Icon(Icons.keyboard_arrow_left_sharp),
-        //   onPressed: () {
-        //     Navigator.of(context).pop();
-        //   },
-        // ),
+        title: const Text('网络配置'),
       ),
       drawer: const SideMenu(),
       body: Form(
@@ -57,7 +51,6 @@ class _SettingPageState extends State<SettingPage> {
             const SizedBox(height: 60),
             buildResetButton(context), // 重置按钮
             const SizedBox(height: 40),
-            // buildBackButton(context),
           ],
         ),
       ),

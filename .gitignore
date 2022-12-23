@@ -10,6 +10,9 @@
 .svn/
 migrate_working_dir/
 
+# 公私钥不上传
+assets/pki/*
+
 # IntelliJ related
 *.iml
 *.ipr
