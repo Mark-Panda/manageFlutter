@@ -23,26 +23,6 @@ class SideMenu extends StatelessWidget {
             },
           ),
           DrawerListTile(
-            title: "统计",
-            svgSrc: "assets/icons/menu_tran.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "任务",
-            svgSrc: "assets/icons/menu_task.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "文件",
-            svgSrc: "assets/icons/menu_doc.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "商店",
-            svgSrc: "assets/icons/menu_store.svg",
-            press: () {},
-          ),
-          DrawerListTile(
             title: "通知",
             svgSrc: "assets/icons/menu_notification.svg",
             press: () {},
@@ -50,7 +30,9 @@ class SideMenu extends StatelessWidget {
           DrawerListTile(
             title: "简介",
             svgSrc: "assets/icons/menu_profile.svg",
-            press: () {},
+            press: () {
+              context.go('/profile');
+            },
           ),
           DrawerListTile(
             title: "设置",

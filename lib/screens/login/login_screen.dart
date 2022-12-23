@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'login_func.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:manager_flutter/api/login.dart';
+import 'package:manager_flutter/commons/expansion_panel.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -10,9 +14,28 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
-  late String _email, _password;
+  final GlobalKey _listKey = GlobalKey<FormState>();
+  late String _username, _password;
   bool _isObscure = true;
   Color _eyeColor = Colors.grey;
+  late String _ip, _port;
+
+  _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    _ip = prefs.getString('requestIp') ?? '172.21.75.37';
+    _port = prefs.getString('requestPort') ?? '3000';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        _load();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,8 +52,10 @@ class _LoginPageState extends State<LoginPage> {
             buildEmailTextField(), // 输入邮箱
             const SizedBox(height: 30),
             buildPasswordTextField(context), // 输入密码
-            // buildForgetPasswordText(context), // 忘记密码
+            buildResetNetworkText(context), // 重置网络
             const SizedBox(height: 60),
+            // buildStationTextField(context),
+            // const SizedBox(height: 30),
             buildLoginButton(context), // 登录按钮
             const SizedBox(height: 40),
             // buildRegisterText(context), // 注册
@@ -44,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
     return const Padding(
         padding: EdgeInsets.all(8),
         child: Text(
-          'Holly登录',
+          'Hi登录',
           style: TextStyle(fontSize: 42),
         ));
   }
@@ -64,15 +89,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildEmailTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: '邮箱地址'),
-      validator: (v) {
-        var emailReg = RegExp(
-            r"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?");
-        if (!emailReg.hasMatch(v!)) {
-          return '请输入正确的邮箱地址';
-        }
-      },
-      onSaved: (v) => _email = v!,
+      decoration: const InputDecoration(labelText: '用户名'),
+      // validator: (v) {
+      //   var emailReg = RegExp(
+      //       r"[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?");
+      //   if (!emailReg.hasMatch(v!)) {
+      //     return '请输入正确的邮箱地址';
+      //   }
+      // },
+      onSaved: (v) => _username = v!,
     );
   }
 
@@ -104,6 +129,50 @@ class _LoginPageState extends State<LoginPage> {
             )));
   }
 
+  // 重置网络设置 底部弹出框
+  Widget buildResetNetworkText(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return Form(
+                    key: _listKey, // 设置globalKey，用于后面获取FormStat
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      children: [
+                        const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
+                        // const SizedBox(height: 60),
+                        buildIpTextField(),
+                        const SizedBox(height: 30),
+                        buildPortTextField(context), // 输入端口
+                        const SizedBox(height: 60),
+                        buildResetButton(context),
+                      ],
+                    ),
+                  );
+                });
+          },
+          child: const Text("网络设置",
+              style: TextStyle(fontSize: 14, color: Colors.grey)),
+        ),
+      ),
+    );
+  }
+
+  // 选择登录框
+  Widget buildStationTextField(BuildContext context) {
+    return const SingleChildScrollView(
+      child: ExpansionPanelPage(),
+    );
+  }
+
+  //登录按钮
   Widget buildLoginButton(BuildContext context) {
     return Align(
       child: SizedBox(
@@ -116,12 +185,83 @@ class _LoginPageState extends State<LoginPage> {
                   side: BorderSide(style: BorderStyle.none)))),
           child:
               Text('去登录', style: Theme.of(context).primaryTextTheme.headline5),
-          onPressed: () {
+          onPressed: () async {
             // 表单校验通过才会继续执行
             if ((_formKey.currentState as FormState).validate()) {
               (_formKey.currentState as FormState).save();
-              //TODO 执行登录方法
-              print('email: $_email, password: $_password');
+              Map resData = await login(_username, _password);
+              if (resData['data'] != null) {
+                await getUserInfo();
+                // ignore: use_build_context_synchronously
+                context.go('/home');
+              } else {
+                Fluttertoast.showToast(
+                    msg: "网络异常", backgroundColor: Colors.red);
+              }
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildIpTextField() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'IP地址'),
+      initialValue: _ip,
+      validator: (v) {
+        var ipReg = RegExp(
+            r"([1-9]?\d|1\d{2}|2[0-4]\d|25[0-5])(\.([1-9]?\d|1\d{2}|2[0-4]\d|25[0-5])){3}$");
+        if (!ipReg.hasMatch(v!)) {
+          return '请输入正确的IP地址';
+        }
+        return null;
+      },
+      onSaved: (v) => _ip = v!,
+    );
+  }
+
+  Widget buildPortTextField(BuildContext context) {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: '端口号'),
+      initialValue: _port,
+      validator: (v) {
+        var ipReg = RegExp(
+            r"^((6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])|[0-5]?\d{0,4})$");
+        if (!ipReg.hasMatch(v!)) {
+          return '请输入正确的端口号';
+        }
+        return null;
+      },
+      onSaved: (v) => _port = v!,
+    );
+  }
+
+  _reset(String resetIp, resetPort) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('requestIp', resetIp);
+    prefs.setString('requestPort', resetPort);
+  }
+
+  Widget buildResetButton(BuildContext context) {
+    return Align(
+      child: SizedBox(
+        height: 45,
+        width: 200,
+        child: ElevatedButton(
+          style: ButtonStyle(
+              // 设置圆角
+              shape: MaterialStateProperty.all(const StadiumBorder(
+                  side: BorderSide(style: BorderStyle.none)))),
+          child:
+              Text('重置', style: Theme.of(context).primaryTextTheme.headline5),
+          onPressed: () {
+            // 表单校验通过才会继续执行
+            if ((_listKey.currentState as FormState).validate()) {
+              (_listKey.currentState as FormState).save();
+              _reset(_ip, _port);
+              Fluttertoast.showToast(
+                  msg: "网络重置成功", backgroundColor: Colors.orange);
             }
           },
         ),

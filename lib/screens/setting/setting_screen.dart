@@ -35,6 +35,12 @@ class _SettingPageState extends State<SettingPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('网络请求配置'),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.keyboard_arrow_left_sharp),
+        //   onPressed: () {
+        //     Navigator.of(context).pop();
+        //   },
+        // ),
       ),
       drawer: const SideMenu(),
       body: Form(
