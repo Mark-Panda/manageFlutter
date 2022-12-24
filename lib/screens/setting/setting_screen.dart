@@ -113,7 +113,12 @@ class _SettingPageState extends State<SettingPage> {
               (_formKey.currentState as FormState).save();
               _reset(_ip, _port);
               Fluttertoast.showToast(
-                  msg: "网络重置成功", backgroundColor: Colors.orange);
+                msg: "网络重置成功",
+                backgroundColor: Colors.green, //背景颜色
+                gravity: ToastGravity.CENTER, // 弹窗位置
+                timeInSecForIosWeb: 1, //停留时间3秒
+                fontSize: 22.0, // 字体大小
+              );
             }
           },
         ),

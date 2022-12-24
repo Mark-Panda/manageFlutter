@@ -31,6 +31,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   go_router: ^5.2.4
   dio: ^4.0.6
   shared_preferences: ^2.0.15  #本地存储
@@ -42,7 +44,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_svg: ^1.1.6
   google_fonts: ^3.0.1
-  encrypt: ^5.0.1
+  encrypt: ^5.0.1 #加密包
 
 dev_dependencies:
   flutter_test:
