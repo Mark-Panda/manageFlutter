@@ -25,7 +25,9 @@ class SideMenu extends StatelessWidget {
           DrawerListTile(
             title: "通知",
             svgSrc: "assets/icons/menu_notification.svg",
-            press: () {},
+            press: () {
+              // context.go('/dropdown');
+            },
           ),
           DrawerListTile(
             title: "简介",

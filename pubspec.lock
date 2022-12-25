@@ -123,6 +123,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_smart_dialog:
+    dependency: "direct main"
+    description:
+      name: flutter_smart_dialog
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.7.3"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -140,13 +147,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  fluttertoast:
-    dependency: "direct main"
-    description:
-      name: fluttertoast
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "8.1.2"
   go_router:
     dependency: "direct main"
     description:

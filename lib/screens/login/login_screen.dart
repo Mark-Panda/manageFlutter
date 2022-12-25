@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:manager_flutter/api/login.dart';
+import 'package:manager_flutter/commons/custom_toast/error_custom.toast.dart';
+import 'package:manager_flutter/commons/custom_toast/success_custom_toast.dart';
 import 'package:manager_flutter/commons/expansion_panel.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -195,8 +197,10 @@ class _LoginPageState extends State<LoginPage> {
                 // ignore: use_build_context_synchronously
                 context.go('/home');
               } else {
-                Fluttertoast.showToast(
-                    msg: "网络异常", backgroundColor: Colors.red);
+                // Fluttertoast.showToast(
+                //     msg: "网络异常", backgroundColor: Colors.red);
+                SmartDialog.showToast('',
+                    builder: (_) => const ErrorCustomToast('网络异常'));
               }
             }
           },
@@ -255,18 +259,13 @@ class _LoginPageState extends State<LoginPage> {
                   side: BorderSide(style: BorderStyle.none)))),
           child:
               Text('重置', style: Theme.of(context).primaryTextTheme.headline5),
-          onPressed: () {
+          onPressed: () async {
             // 表单校验通过才会继续执行
             if ((_listKey.currentState as FormState).validate()) {
               (_listKey.currentState as FormState).save();
               _reset(_ip, _port);
-              Fluttertoast.showToast(
-                msg: "网络重置成功",
-                backgroundColor: Colors.green, //背景颜色
-                gravity: ToastGravity.CENTER, // 弹窗位置
-                timeInSecForIosWeb: 1, //停留时间3秒
-                fontSize: 22.0, // 字体大小
-              );
+              SmartDialog.showToast('',
+                  builder: (_) => const SuccessCustomToast('网络重置成功'));
               // Navigator.pop(context); //返回上一页面
             }
           },

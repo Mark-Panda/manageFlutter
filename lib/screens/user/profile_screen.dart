@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'package:manager_flutter/commons/custom_toast/error_custom.toast.dart';
 import 'package:manager_flutter/api/login.dart';
 import 'package:manager_flutter/commons/side_menu.dart';
 
@@ -102,8 +102,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 // ignore: use_build_context_synchronously
                 context.go('/login');
               } else {
-                Fluttertoast.showToast(
-                    msg: "网络异常", backgroundColor: Colors.red);
+                SmartDialog.showToast('',
+                    builder: (_) => const ErrorCustomToast('网络异常'));
               }
             },
           ),

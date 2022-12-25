@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:manager_flutter/commons/side_menu.dart';
+import 'package:manager_flutter/commons/custom_toast/success_custom_toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -112,13 +113,8 @@ class _SettingPageState extends State<SettingPage> {
             if ((_formKey.currentState as FormState).validate()) {
               (_formKey.currentState as FormState).save();
               _reset(_ip, _port);
-              Fluttertoast.showToast(
-                msg: "网络重置成功",
-                backgroundColor: Colors.green, //背景颜色
-                gravity: ToastGravity.CENTER, // 弹窗位置
-                timeInSecForIosWeb: 1, //停留时间3秒
-                fontSize: 22.0, // 字体大小
-              );
+              SmartDialog.showToast('',
+                  builder: (_) => const SuccessCustomToast('网络重置成功'));
             }
           },
         ),
