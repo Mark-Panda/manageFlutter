@@ -197,8 +197,6 @@ class _LoginPageState extends State<LoginPage> {
                 // ignore: use_build_context_synchronously
                 context.go('/home');
               } else {
-                // Fluttertoast.showToast(
-                //     msg: "网络异常", backgroundColor: Colors.red);
                 SmartDialog.showToast('',
                     builder: (_) => const ErrorCustomToast('网络异常'));
               }
