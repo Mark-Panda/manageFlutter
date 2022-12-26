@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
             buildTitle(), // Login
             // buildTitleLine(), // Login下面的下划线
             const SizedBox(height: 60),
-            buildEmailTextField(), // 输入邮箱
+            buildUserNameTextField(), // 输入用户名
             const SizedBox(height: 30),
             buildPasswordTextField(context), // 输入密码
             buildResetNetworkText(context), // 重置网络
@@ -68,12 +68,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget buildTitle() {
-    return const Padding(
-        padding: EdgeInsets.all(8),
-        child: Text(
-          'Hi登录',
-          style: TextStyle(fontSize: 42),
-        ));
+    return Padding(
+        padding: const EdgeInsets.all(8),
+        child: Image.asset('assets/images/logo.png'));
   }
 
   Widget buildTitleLine() {
@@ -89,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
         ));
   }
 
-  Widget buildEmailTextField() {
+  Widget buildUserNameTextField() {
     return TextFormField(
       decoration: const InputDecoration(labelText: '用户名'),
       validator: (v) {
@@ -97,6 +94,7 @@ class _LoginPageState extends State<LoginPage> {
         if (!userNameReg.hasMatch(v!)) {
           return '请输入正确的用户名(4-16位、字母、数字、下划线、减号)';
         }
+        return null;
       },
       onSaved: (v) => _username = v!,
     );
@@ -111,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
           if (!pwdReg.hasMatch(v!)) {
             return '请输入正确的密码(1-16位、字母、数字、下划线、减号)';
           }
+          return null;
         },
         decoration: InputDecoration(
             labelText: "密码",
@@ -181,12 +180,7 @@ class _LoginPageState extends State<LoginPage> {
         height: 45,
         width: 250,
         child: ElevatedButton(
-          style: ButtonStyle(
-              // 设置圆角
-              shape: MaterialStateProperty.all(const StadiumBorder(
-                  side: BorderSide(style: BorderStyle.none)))),
-          child:
-              Text('去登录', style: Theme.of(context).primaryTextTheme.headline5),
+          child: const Text('去登录'),
           onPressed: () async {
             // 表单校验通过才会继续执行
             if ((_formKey.currentState as FormState).validate()) {

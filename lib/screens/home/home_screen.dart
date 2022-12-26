@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
               // fit: BoxFit.cover,
             );
           case ConnectionState.waiting:
-            print('object$loginState');
+            // 初始化过度阶段
             // return const Text('Awaiting result...');
             return Image.asset(
               'assets/images/logo.png',
@@ -61,9 +61,9 @@ class _HomePageState extends State<HomePage> {
             );
           default:
             if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
+              // 报错时的页面
+              return Image.asset('assets/images/404.jpeg');
             } else {
-              print(snapshot.data);
               if (loginState == 0) {
                 return const LoginPage();
               } else {

@@ -21,6 +21,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         // Scaffold的默认颜色。典型Material应用程序或应用程序内页面的背景颜色
         scaffoldBackgroundColor: bgColor,
+        // 统一ElevatedButton按钮风格
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            textStyle: MaterialStateProperty.all(
+                Theme.of(context).primaryTextTheme.headline5),
+            backgroundColor: MaterialStateProperty.all(buttonBGColor),
+            // 设置圆角
+            shape: MaterialStateProperty.all(
+                const StadiumBorder(side: BorderSide(style: BorderStyle.none))),
+          ),
+        ),
         // appbar主题设置
         appBarTheme: const AppBarTheme(
           backgroundColor: secondaryColor,

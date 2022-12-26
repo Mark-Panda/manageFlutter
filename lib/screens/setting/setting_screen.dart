@@ -102,12 +102,7 @@ class _SettingPageState extends State<SettingPage> {
         height: 45,
         width: 200,
         child: ElevatedButton(
-          style: ButtonStyle(
-              // 设置圆角
-              shape: MaterialStateProperty.all(const StadiumBorder(
-                  side: BorderSide(style: BorderStyle.none)))),
-          child:
-              Text('重置', style: Theme.of(context).primaryTextTheme.headline5),
+          child: const Text('重置'),
           onPressed: () {
             // 表单校验通过才会继续执行
             if ((_formKey.currentState as FormState).validate()) {
