@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:manager_flutter/api/login.dart';
 import 'package:manager_flutter/commons/custom_toast/error_custom.toast.dart';
 import 'package:manager_flutter/commons/custom_toast/success_custom_toast.dart';
-import 'package:manager_flutter/commons/expansion_panel.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -17,6 +17,25 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   final GlobalKey _listKey = GlobalKey<FormState>();
+  final List<String> items = [
+    'Item1',
+    'Item2',
+    'Item3',
+    'Item4',
+    'Item5',
+    'Item6',
+    'Item7',
+    'Item8',
+    'Item9',
+    'Item21',
+    'Item31',
+    'Item41',
+    'Item12',
+    'Item23',
+    'Item32',
+    'Item43',
+  ];
+  String? selectedValue;
   late String _username, _password;
   bool _isObscure = true;
   Color _eyeColor = Colors.grey;
@@ -54,10 +73,10 @@ class _LoginPageState extends State<LoginPage> {
             buildUserNameTextField(), // 输入用户名
             const SizedBox(height: 30),
             buildPasswordTextField(context), // 输入密码
+            const SizedBox(height: 30),
+            buildStationTextField(context),
             buildResetNetworkText(context), // 重置网络
             const SizedBox(height: 60),
-            // buildStationTextField(context),
-            // const SizedBox(height: 30),
             buildLoginButton(context), // 登录按钮
             const SizedBox(height: 40),
             // buildRegisterText(context), // 注册
@@ -88,7 +107,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildUserNameTextField() {
     return TextFormField(
-      decoration: const InputDecoration(labelText: '用户名'),
+      decoration:
+          const InputDecoration(labelText: '用户名', icon: Icon(Icons.person)),
       validator: (v) {
         var userNameReg = RegExp(r"^[\d\w-_]{4,16}$");
         if (!userNameReg.hasMatch(v!)) {
@@ -112,6 +132,7 @@ class _LoginPageState extends State<LoginPage> {
           return null;
         },
         decoration: InputDecoration(
+            icon: const Icon(Icons.key),
             labelText: "密码",
             suffixIcon: IconButton(
               icon: Icon(
@@ -128,6 +149,64 @@ class _LoginPageState extends State<LoginPage> {
                 });
               },
             )));
+  }
+
+  //选择工作站
+  Widget buildStationTextField(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(Icons.factory_outlined),
+        const SizedBox(
+          width: 14,
+        ),
+        DropdownButtonHideUnderline(
+          child: DropdownButton2(
+            isExpanded: true,
+            hint: const Text('请选择工作站'),
+            items: items
+                .map((item) => DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(
+                        item,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ))
+                .toList(),
+            value: selectedValue,
+            onChanged: (value) {
+              setState(() {
+                selectedValue = value as String;
+              });
+            },
+            icon: const Icon(
+              Icons.arrow_forward_ios_outlined,
+            ),
+            iconSize: 18,
+            buttonHeight: 60,
+            buttonWidth: 335, // 按钮宽度
+            buttonPadding: const EdgeInsets.only(left: 0, right: 14),
+            // buttonDecoration: BoxDecoration(
+            //   borderRadius: BorderRadius.circular(14),
+            //   border: Border.all(
+            //     color: Colors.black26,
+            //   ),
+            //   color: Colors.redAccent,
+            // ),
+            buttonElevation: 2,
+            itemHeight: 40,
+            itemPadding: const EdgeInsets.only(left: 14, right: 14),
+            dropdownMaxHeight: 200, //下拉列表最大高度
+            dropdownWidth: 330, //下拉列表宽度
+            dropdownPadding: null,
+            dropdownElevation: 8, //下降高度
+            scrollbarRadius: const Radius.circular(40), //滚动条半径
+            scrollbarThickness: 6, //滚动条厚度
+            scrollbarAlwaysShow: true, //滚动条始终显示
+            // offset: const Offset(-20, 0),
+          ),
+        )
+      ],
+    );
   }
 
   // 重置网络设置 底部弹出框
@@ -163,13 +242,6 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(fontSize: 14, color: Colors.grey)),
         ),
       ),
-    );
-  }
-
-  // 选择登录框
-  Widget buildStationTextField(BuildContext context) {
-    return const SingleChildScrollView(
-      child: ExpansionPanelPage(),
     );
   }
 
