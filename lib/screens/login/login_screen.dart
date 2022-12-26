@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -17,25 +18,14 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   final GlobalKey _listKey = GlobalKey<FormState>();
-  final List<String> items = [
-    'Item1',
-    'Item2',
-    'Item3',
-    'Item4',
-    'Item5',
-    'Item6',
-    'Item7',
-    'Item8',
-    'Item9',
-    'Item21',
-    'Item31',
-    'Item41',
-    'Item12',
-    'Item23',
-    'Item32',
-    'Item43',
+  final List<Map<String, String>> itemsJson = [
+    {"code": "001", "name": "工作站1"},
+    {"code": "002", "name": "工作站2"},
+    {"code": "003", "name": "工作站3"},
+    {"code": "004", "name": "工作站4"},
+    {"code": "005", "name": "工作站5"}
   ];
-  String? selectedValue;
+  String? selectedValue; // 实际需要的下拉框的值
   late String _username, _password;
   bool _isObscure = true;
   Color _eyeColor = Colors.grey;
@@ -155,7 +145,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildStationTextField(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.factory_outlined),
+        SvgPicture.asset(
+          'assets/icons/computer.svg',
+          height: 22,
+        ),
         const SizedBox(
           width: 14,
         ),
@@ -163,11 +156,11 @@ class _LoginPageState extends State<LoginPage> {
           child: DropdownButton2(
             isExpanded: true,
             hint: const Text('请选择工作站'),
-            items: items
-                .map((item) => DropdownMenuItem<String>(
-                      value: item,
+            items: itemsJson
+                .map((item) => DropdownMenuItem<Object>(
+                      value: item['code'], // 实际需要的下拉框的值
                       child: Text(
-                        item,
+                        item['name']!,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ))
@@ -175,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
             value: selectedValue,
             onChanged: (value) {
               setState(() {
+                print(value);
                 selectedValue = value as String;
               });
             },
@@ -239,7 +233,8 @@ class _LoginPageState extends State<LoginPage> {
                 });
           },
           child: const Text("网络设置",
-              style: TextStyle(fontSize: 14, color: Colors.grey)),
+              style: TextStyle(
+                  fontSize: 14, color: Color.fromARGB(255, 196, 194, 194))),
         ),
       ),
     );

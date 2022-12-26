@@ -52,8 +52,19 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Image.asset('assets/images/profile_pic.png',
                 width: 100.0, height: 100.0, fit: BoxFit.contain),
           ),
-          const Padding(padding: EdgeInsets.only(top: 30)),
+          const Padding(padding: EdgeInsets.only(top: 60)),
+          const SizedBox(
+            // width: 14,
+            height: 4,
+            child: Scaffold(
+              backgroundColor: Colors.black,
+            ),
+          ),
           ListTile(
+            // leading: const Icon(
+            //   Icons.person_outline,
+            //   size: 30,
+            // ),
             title: const Text('昵称'),
             trailing: Wrap(
               spacing: 12, // space between two icons
@@ -62,21 +73,12 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          // ListTile(
-          //   title: const Text('部门'),
-          //   trailing: Wrap(
-          //     spacing: 12, // space between two icons
-          //     children: <Widget>[
-          //       Text(_workCenter), // icon-1
-          //     ],
-          //   ),
-          // ),
           ListTile(
             // leading: const Icon(
             //   Icons.article_outlined,
             //   size: 30,
             // ),
-            title: const Text('当前工作中心'),
+            title: const Text('工作中心'),
             trailing: Wrap(
               spacing: 12, // space between two icons
               children: <Widget>[
@@ -84,13 +86,21 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
-          const Padding(padding: EdgeInsets.only(top: 60)),
-          // const Divider(
-          //   indent: 40,
-          //   endIndent: 40,
-          //   thickness: 2,
-          //   color: Color.fromARGB(255, 4, 4, 19),
-          // ),
+          const SizedBox(
+            // width: 14,
+            height: 4,
+            child: Scaffold(
+              backgroundColor: Colors.black,
+            ),
+          ),
+          const Padding(padding: EdgeInsets.only(top: 160)),
+          const SizedBox(
+            // width: 14,
+            height: 4,
+            child: Scaffold(
+              backgroundColor: Colors.black,
+            ),
+          ),
           ListTile(
             title: const Text(
               '退出登录',
@@ -106,6 +116,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     builder: (_) => const ErrorCustomToast('网络异常'));
               }
             },
+          ),
+          const SizedBox(
+            // width: 14,
+            height: 4,
+            child: Scaffold(
+              backgroundColor: Colors.black,
+            ),
           ),
         ],
       ),
