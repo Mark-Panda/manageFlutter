@@ -20,55 +20,68 @@ class _HomePageState extends State<HomePage> {
     _validateLogin();
   }
 
-  Future _validateLogin() async {
-    Future future = Future(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      // 不止判断token还要判断token是否能正常获取用户信息
-      var currentToken = prefs.getString("userToken");
-      if (currentToken != null) {
-        // 请求获取用户信息接口
-        Map resData = await getUserInfo();
-        if (resData['data'] != null) {
-          return prefs.getString("userToken");
-        } else {
-          return null;
-        }
-      }
-      return null;
-    });
-
-    future.then((val) {
-      if (val == null) {
-        setState(() {
-          loginState = 0;
-        });
+  Future<String> _validateLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // 不止判断token还要判断token是否能正常获取用户信息
+    var currentToken = prefs.getString("userToken");
+    if (currentToken != null) {
+      // 请求获取用户信息接口
+      Map resData = await getUserInfo();
+      if (resData['data'] != null) {
+        loginState = 1;
+        return 'success';
       } else {
-        setState(() {
-          loginState = 1;
-        });
-      }
-    }).catchError((_) {
-      setState(() {
         loginState = 0;
-      });
-    });
+        return 'false';
+      }
+    } else {
+      loginState = 0;
+      return 'false';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loginState == 0) {
-      return const LoginPage();
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('主页'),
-        ),
-        drawer: const SideMenu(),
-        body: Image.asset(
-          'assets/images/logo.png',
-          // fit: BoxFit.cover,
-        ),
-      );
-    }
+    var profileBuilder = FutureBuilder(
+      future: _validateLogin(),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+            // return const Text('Press button to start');
+            return Image.asset(
+              'assets/images/logo.png',
+              // fit: BoxFit.cover,
+            );
+          case ConnectionState.waiting:
+            print('object$loginState');
+            // return const Text('Awaiting result...');
+            return Image.asset(
+              'assets/images/logo.png',
+              // fit: BoxFit.cover,
+            );
+          default:
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              print(snapshot.data);
+              if (loginState == 0) {
+                return const LoginPage();
+              } else {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: const Text('主页'),
+                  ),
+                  drawer: const SideMenu(),
+                  body: Image.asset(
+                    'assets/images/logo.png',
+                    // fit: BoxFit.cover,
+                  ),
+                );
+              }
+            }
+        }
+      },
+    );
+    return profileBuilder;
   }
 }
