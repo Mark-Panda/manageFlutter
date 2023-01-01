@@ -17,28 +17,28 @@ class SideMenu extends StatelessWidget {
           ),
           DrawerListTile(
             title: "仪表板",
-            svgSrc: "assets/icons/menu_dashbord.svg",
+            svgSrc: "assets/icons/side_dashboard.svg",
             press: () {
               context.go('/home');
             },
           ),
           DrawerListTile(
-            title: "通知",
-            svgSrc: "assets/icons/menu_notification.svg",
+            title: "扫码",
+            svgSrc: "assets/icons/side_scan_code.svg",
             press: () {
-              // context.go('/dropdown');
+              context.go('/scanner');
             },
           ),
           DrawerListTile(
             title: "简介",
-            svgSrc: "assets/icons/menu_profile.svg",
+            svgSrc: "assets/icons/side_me.svg",
             press: () {
               context.go('/profile');
             },
           ),
           DrawerListTile(
-            title: "设置",
-            svgSrc: "assets/icons/menu_setting.svg",
+            title: "网络设置",
+            svgSrc: "assets/icons/side_wifi.svg",
             press: () {
               context.go('/setting');
             },

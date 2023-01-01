@@ -31,11 +31,11 @@ class _HomePageState extends State<HomePage> {
         loginState = 1;
         return 'success';
       } else {
-        loginState = 0;
+        loginState = 1;
         return 'false';
       }
     } else {
-      loginState = 0;
+      loginState = 1;
       return 'false';
     }
   }

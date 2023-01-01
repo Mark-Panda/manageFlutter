@@ -3,6 +3,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:manager_flutter/screens/home/home_screen.dart';
 import 'package:manager_flutter/screens/login/login_screen.dart';
+import 'package:manager_flutter/screens/scanner/scanner_screen.dart';
 import 'package:manager_flutter/screens/setting/setting_screen.dart';
 import 'package:manager_flutter/screens/user/profile_screen.dart';
 
@@ -40,6 +41,12 @@ final GoRouter routerList = GoRouter(
             path: 'profile',
             builder: (BuildContext context, GoRouterState state) {
               return const ProfilePage();
+            },
+          ),
+          GoRoute(
+            path: 'scanner',
+            builder: (BuildContext context, GoRouterState state) {
+              return const ScannerPage();
             },
           ),
         ]

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
 const primaryColor = Color.fromARGB(255, 97, 224, 215);
-// const primaryColor = Color(0xFF2697FF);
 // 组件背景色
 const secondaryColor = Color.fromARGB(255, 118, 139, 132);
-// const secondaryColor = Color.fromARGB(255, 126, 191, 229);
-// const secondaryColor = Color(0xFF2A2D3E);
 // 主题背景色
 const bgColor = Color.fromARGB(255, 118, 139, 132);
 
