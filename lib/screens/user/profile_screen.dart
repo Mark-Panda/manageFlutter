@@ -4,7 +4,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:manager_flutter/commons/custom_toast/error_custom.toast.dart';
-import 'package:manager_flutter/api/login.dart';
+import 'package:manager_flutter/api/restful_api.dart';
 import 'package:manager_flutter/commons/side_menu.dart';
 
 class ProfilePage extends StatefulWidget {

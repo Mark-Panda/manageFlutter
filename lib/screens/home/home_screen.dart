@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:manager_flutter/api/login.dart';
+import 'package:manager_flutter/api/restful_api.dart';
 import 'package:manager_flutter/screens/login/login_screen.dart';
 import 'package:manager_flutter/commons/side_menu.dart';
 
@@ -31,11 +31,11 @@ class _HomePageState extends State<HomePage> {
         loginState = 1;
         return 'success';
       } else {
-        loginState = 1;
+        loginState = 0;
         return 'false';
       }
     } else {
-      loginState = 1;
+      loginState = 0;
       return 'false';
     }
   }

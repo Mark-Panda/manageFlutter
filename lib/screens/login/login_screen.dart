@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:manager_flutter/api/login.dart';
+import 'package:manager_flutter/api/restful_api.dart';
 import 'package:manager_flutter/commons/custom_toast/error_custom.toast.dart';
 import 'package:manager_flutter/commons/custom_toast/success_custom_toast.dart';
 
@@ -19,13 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   final GlobalKey _listKey = GlobalKey<FormState>();
   final List<Map<String, String>> itemsJson = [
-    {"code": "001", "name": "工作站1"},
-    {"code": "002", "name": "工作站2"},
-    {"code": "003", "name": "工作站3"},
-    {"code": "004", "name": "工作站4"},
-    {"code": "005", "name": "工作站5"}
+    {"code": "", "name": "未找到工作站信息"}
   ];
-  String? selectedValue; // 实际需要的下拉框的值
+  String? _stationValue; // 实际需要的下拉框的值
   late String _username, _password;
   bool _isObscure = true;
   Color _eyeColor = Colors.grey;
@@ -37,12 +33,37 @@ class _LoginPageState extends State<LoginPage> {
     _port = prefs.getString('requestPort') ?? '3000';
   }
 
+  _getStationList() async {
+    Map stationResult = await getStations();
+    if (stationResult['data'] != null) {
+      List stationList = stationResult['data'];
+      if (stationList.isNotEmpty) {
+        setState(() {
+          itemsJson.clear();
+          for (var centerItem in stationList) {
+            List stationItem = centerItem["workStations"];
+            itemsJson.add({
+              "code": stationItem[0]["code"],
+              "name": stationItem[0]["name"] + "【" + centerItem["name"] + "】"
+            });
+          }
+        });
+      }
+    } else {
+      setState(() {
+        itemsJson.clear();
+        itemsJson.add({"code": "", "name": "未找到工作站信息"});
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
       setState(() {
         _load();
+        _getStationList();
       });
     });
   }
@@ -58,18 +79,16 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
             buildTitle(), // Login
-            // buildTitleLine(), // Login下面的下划线
-            const SizedBox(height: 60),
+            // const SizedBox(height: 40),
             buildUserNameTextField(), // 输入用户名
             const SizedBox(height: 30),
             buildPasswordTextField(context), // 输入密码
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             buildStationTextField(context),
             buildResetNetworkText(context), // 重置网络
-            const SizedBox(height: 60),
+            const SizedBox(height: 30),
             buildLoginButton(context), // 登录按钮
-            const SizedBox(height: 40),
-            // buildRegisterText(context), // 注册
+            // const SizedBox(height: 40),1
           ],
         ),
       ),
@@ -97,8 +116,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildUserNameTextField() {
     return TextFormField(
-      decoration:
-          const InputDecoration(labelText: '用户名', icon: Icon(Icons.person)),
+      decoration: InputDecoration(
+        labelText: '用户名',
+        icon: SvgPicture.asset(
+          'assets/icons/login_avatar.svg',
+          height: 20,
+        ),
+      ),
       validator: (v) {
         var userNameReg = RegExp(r"^[\d\w-_]{4,16}$");
         if (!userNameReg.hasMatch(v!)) {
@@ -122,7 +146,10 @@ class _LoginPageState extends State<LoginPage> {
           return null;
         },
         decoration: InputDecoration(
-            icon: const Icon(Icons.key),
+            icon: SvgPicture.asset(
+              'assets/icons/login_key.svg',
+              height: 20,
+            ),
             labelText: "密码",
             suffixIcon: IconButton(
               icon: Icon(
@@ -143,63 +170,63 @@ class _LoginPageState extends State<LoginPage> {
 
   //选择工作站
   Widget buildStationTextField(BuildContext context) {
-    return Row(
-      children: [
-        SvgPicture.asset(
-          'assets/icons/computer.svg',
-          height: 22,
+    return DropdownButtonFormField2(
+      decoration: InputDecoration(
+        labelText: "选择工作站",
+        icon: SvgPicture.asset(
+          'assets/icons/login_computer.svg',
+          height: 20,
         ),
-        const SizedBox(
-          width: 14,
-        ),
-        DropdownButtonHideUnderline(
-          child: DropdownButton2(
-            isExpanded: true,
-            hint: const Text('请选择工作站'),
-            items: itemsJson
-                .map((item) => DropdownMenuItem<Object>(
-                      value: item['code'], // 实际需要的下拉框的值
-                      child: Text(
-                        item['name']!,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ))
-                .toList(),
-            value: selectedValue,
-            onChanged: (value) {
-              setState(() {
-                print(value);
-                selectedValue = value as String;
-              });
-            },
-            icon: const Icon(
-              Icons.arrow_forward_ios_outlined,
-            ),
-            iconSize: 18,
-            buttonHeight: 60,
-            buttonWidth: 335, // 按钮宽度
-            buttonPadding: const EdgeInsets.only(left: 0, right: 14),
-            // buttonDecoration: BoxDecoration(
-            //   borderRadius: BorderRadius.circular(14),
-            //   border: Border.all(
-            //     color: Colors.black26,
-            //   ),
-            //   color: Colors.redAccent,
-            // ),
-            buttonElevation: 2,
-            itemHeight: 40,
-            itemPadding: const EdgeInsets.only(left: 14, right: 14),
-            dropdownMaxHeight: 200, //下拉列表最大高度
-            dropdownWidth: 330, //下拉列表宽度
-            dropdownPadding: null,
-            dropdownElevation: 8, //下降高度
-            scrollbarRadius: const Radius.circular(40), //滚动条半径
-            scrollbarThickness: 6, //滚动条厚度
-            scrollbarAlwaysShow: true, //滚动条始终显示
-            // offset: const Offset(-20, 0),
-          ),
-        )
-      ],
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+      ),
+      isExpanded: false,
+      icon: const Icon(
+        Icons.arrow_drop_down,
+        color: Colors.grey,
+      ),
+      iconSize: 30,
+      buttonHeight: 60,
+      buttonWidth: 284, // 按钮宽度
+      buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+      dropdownDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      items: itemsJson
+          .map((item) => DropdownMenuItem<Object>(
+                value: item['code'],
+                child: Text(
+                  item['name']!,
+                  style: const TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ))
+          .toList(),
+      validator: (value) {
+        if (value == null) {
+          return '请选择工作站';
+        }
+      },
+      onChanged: (value) {
+        setState(() {});
+      },
+      onSaved: (value) {},
+      onMenuStateChange: (isOpen) async {
+        //点开下拉列表
+        if (isOpen) {
+          await _getStationList();
+        }
+      },
+      itemHeight: 40,
+      itemPadding: const EdgeInsets.only(left: 14, right: 14),
+      dropdownMaxHeight: 200, //下拉列表最大高度
+      // dropdownWidth: 330, //下拉列表宽度
+      // dropdownPadding: null,
+      dropdownElevation: 8, //下降高度
+      scrollbarRadius: const Radius.circular(40), //滚动条半径
+      scrollbarThickness: 6, //滚动条厚度
+      scrollbarAlwaysShow: true, //滚动条始终显示
     );
   }
 
@@ -252,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
             // 表单校验通过才会继续执行
             if ((_formKey.currentState as FormState).validate()) {
               (_formKey.currentState as FormState).save();
-              Map resData = await login(_username, _password);
+              Map resData = await login(_username, _password, _stationValue);
               if (resData['data'] != null) {
                 await getUserInfo();
                 // ignore: use_build_context_synchronously
@@ -325,7 +352,10 @@ class _LoginPageState extends State<LoginPage> {
               _reset(_ip, _port);
               SmartDialog.showToast('',
                   builder: (_) => const SuccessCustomToast('网络重置成功'));
-              // Navigator.pop(context); //返回上一页面
+              //返回上一页面并刷新页面
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
             }
           },
         ),

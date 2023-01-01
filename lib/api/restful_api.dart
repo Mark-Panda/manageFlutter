@@ -7,7 +7,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 
 // 登录方法
-login(String username, password) async {
+login(String username, password, station) async {
   try {
     // 公钥导入
     final publicPem = await rootBundle.loadString('assets/pki/public.pem');
@@ -43,7 +43,11 @@ login(String username, password) async {
       ))
       ..add(LogInterceptor(responseBody: false));
     response = await dio.post('/login',
-        data: {'username': username, 'password': encryptedPwd.base64},
+        data: {
+          'username': username,
+          'password': encryptedPwd.base64,
+          'workStation': station
+        },
         options: Options(contentType: Headers.jsonContentType));
     print('登录返回结果Token ${response.data}');
     Map<String, dynamic> data = response.data;
@@ -127,6 +131,44 @@ logout() async {
     return data;
   } catch (e) {
     print('注销用户异常$e');
+    // ignore: prefer_typing_uninitialized_variables
+    Map<String, dynamic> error = {'error': e};
+    return error;
+  }
+}
+
+// 获取工作站
+getStations() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
+    var requestPort = prefs.getString('requestPort') ?? '3000';
+    var url = 'http://$requestIp:$requestPort/api';
+    Response response;
+    Dio dio = Dio();
+    dio.options
+      ..baseUrl = url
+      ..connectTimeout = 5000 //5s
+      ..receiveTimeout = 5000
+      ..validateStatus = (int? status) {
+        return status != null && status > 0;
+      }
+      ..headers = {};
+    dio.interceptors
+      ..add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          return handler.next(options);
+        },
+      ))
+      ..add(LogInterceptor(responseBody: false));
+    response = await dio.get('/pass/workStations',
+        options: Options(contentType: Headers.jsonContentType));
+    print('获取工作站返回结果 ${response.data}');
+    Map<String, dynamic> data = response.data;
+    // ignore: prefer_typing_uninitialized_variables
+    return data;
+  } catch (e) {
+    print('获取工作站异常$e');
     // ignore: prefer_typing_uninitialized_variables
     Map<String, dynamic> error = {'error': e};
     return error;
