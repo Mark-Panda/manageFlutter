@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:manager_flutter/api/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart';
 // ignore: depend_on_referenced_packages
@@ -51,9 +51,13 @@ login(String username, password, station) async {
         options: Options(contentType: Headers.jsonContentType));
     print('登录返回结果Token ${response.data}');
     Map<String, dynamic> data = response.data;
-    await prefs.setString('userToken', data['data']['token']);
-    // ignore: prefer_typing_uninitialized_variables
-    return data;
+    if (data['data'] != null) {
+      await prefs.setString('userToken', data['data']['token']);
+      // ignore: prefer_typing_uninitialized_variables
+      return data;
+    } else {
+      return data;
+    }
   } catch (e) {
     print('登录异常$e');
     // ignore: prefer_typing_uninitialized_variables
@@ -89,7 +93,7 @@ getUserInfo() async {
       ..add(LogInterceptor(responseBody: false));
     response = await dio.get('/userInfo');
     print('登录用户信息 ${response.data}');
-    await prefs.setString('userInfo', jsonEncode(response.data['data']));
+    // await prefs.setString('userInfo', jsonEncode(response.data['data']));
     Map<String, dynamic> data = response.data;
     return data;
   } catch (e) {
@@ -125,8 +129,7 @@ logout() async {
       ))
       ..add(LogInterceptor(responseBody: false));
     await dio.get('/logout');
-    await prefs.remove('userToken');
-    await prefs.remove('userInfo');
+    delAllInfo();
     Map<String, dynamic> data = {'data': '注销成功'};
     return data;
   } catch (e) {
@@ -169,6 +172,65 @@ getStations() async {
     return data;
   } catch (e) {
     print('获取工作站异常$e');
+    // ignore: prefer_typing_uninitialized_variables
+    Map<String, dynamic> error = {'error': e};
+    return error;
+  }
+}
+
+feed(String workOrderNo, materialCode, materialName, unit, amount, lotNo,
+    equipmentNo, feedPortNo, teamCode, operatorName, center, station) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('userToken');
+    var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
+    var requestPort = prefs.getString('requestPort') ?? '3000';
+    var url = 'http://$requestIp:$requestPort/internal';
+    Response response;
+    Dio dio = Dio();
+    dio.options
+      ..baseUrl = url
+      ..connectTimeout = 5000 //5s
+      ..receiveTimeout = 5000
+      ..validateStatus = (int? status) {
+        return status != null && status > 0;
+      }
+      ..headers = {'x-access-token': token};
+    dio.interceptors
+      ..add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          return handler.next(options);
+        },
+      ))
+      ..add(LogInterceptor(responseBody: false));
+    response = await dio.post('/workOrderFeeding',
+        data: {
+          'type': 'SCAN',
+          'workOrderNo': workOrderNo,
+          'materialCode': materialCode,
+          'materialName': materialName,
+          'unit': unit,
+          'amount': amount,
+          'lotNo': lotNo,
+          'equipmentNo': equipmentNo,
+          'feedPortNo': feedPortNo,
+          'feedTeamCode': teamCode,
+          'operator': operatorName,
+          'workCenter': center,
+          'workStation': station
+        },
+        options: Options(contentType: Headers.jsonContentType));
+    print('投料返回结果 ${response.data}');
+    Map<String, dynamic> data = response.data;
+    if (data['error'] != null) {
+      // ignore: prefer_typing_uninitialized_variables
+      Map<String, dynamic> error = {'error': data['error']};
+      return error;
+    }
+    // ignore: prefer_typing_uninitialized_variables
+    return data;
+  } catch (e) {
+    print('登录异常$e');
     // ignore: prefer_typing_uninitialized_variables
     Map<String, dynamic> error = {'error': e};
     return error;

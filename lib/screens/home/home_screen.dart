@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manager_flutter/api/graphql_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:manager_flutter/api/restful_api.dart';
 import 'package:manager_flutter/screens/login/login_screen.dart';
@@ -27,7 +28,9 @@ class _HomePageState extends State<HomePage> {
     if (currentToken != null) {
       // 请求获取用户信息接口
       Map resData = await getUserInfo();
+
       if (resData['data'] != null) {
+        await getUserBaseInfo(resData['data']['person']['id']);
         loginState = 1;
         return 'success';
       } else {

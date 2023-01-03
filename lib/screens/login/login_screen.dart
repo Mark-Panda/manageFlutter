@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:manager_flutter/api/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:manager_flutter/api/restful_api.dart';
@@ -21,6 +24,12 @@ class _LoginPageState extends State<LoginPage> {
   final List<Map<String, String>> itemsJson = [
     {"code": "", "name": "未找到工作站信息"}
   ];
+  late Map<String, String> stationJson = {
+    "stationCode": "",
+    "stationName": "",
+    "centerCode": "",
+    "centerName": "",
+  };
   String? _stationValue; // 实际需要的下拉框的值
   late String _username, _password;
   bool _isObscure = true;
@@ -44,7 +53,9 @@ class _LoginPageState extends State<LoginPage> {
             List stationItem = centerItem["workStations"];
             itemsJson.add({
               "code": stationItem[0]["code"],
-              "name": stationItem[0]["name"] + "【" + centerItem["name"] + "】"
+              "name": stationItem[0]["name"] + "【" + centerItem["name"] + "】",
+              "centerCode": centerItem["code"],
+              "centerName": centerItem["name"],
             });
           }
         });
@@ -52,7 +63,12 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       setState(() {
         itemsJson.clear();
-        itemsJson.add({"code": "", "name": "未找到工作站信息"});
+        itemsJson.add({
+          "code": "",
+          "name": "未找到工作站信息",
+          "centerCode": "",
+          "centerName": ""
+        });
       });
     }
   }
@@ -209,7 +225,19 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       onChanged: (value) {
-        setState(() {});
+        setState(() {
+          for (var item in itemsJson) {
+            if (item['code'] == value) {
+              stationJson.clear();
+              stationJson.addAll({
+                "stationCode": item['code'].toString(),
+                "stationName": item['name'].toString(),
+                "centerCode": item['centerCode'].toString(),
+                "centerName": item['centerName'].toString(),
+              });
+            }
+          }
+        });
       },
       onSaved: (value) {},
       onMenuStateChange: (isOpen) async {
@@ -281,10 +309,24 @@ class _LoginPageState extends State<LoginPage> {
               (_formKey.currentState as FormState).save();
               Map resData = await login(_username, _password, _stationValue);
               if (resData['data'] != null) {
-                await getUserInfo();
+                if (resData['data']['code'] != null) {
+                  // 删除缓存
+                  delAllInfo();
+                  SmartDialog.showToast('',
+                      builder: (_) =>
+                          ErrorCustomToast(resData['data']['error']));
+                }
+                // 保存工作站信息
+                print('登录成功');
+                print(stationJson);
+                //保存登录工作站信息
+                String stationStr = jsonEncode(stationJson);
+                saveOperatInfo(stationStr);
                 // ignore: use_build_context_synchronously
                 context.go('/home');
               } else {
+                // 删除缓存
+                delAllInfo();
                 SmartDialog.showToast('',
                     builder: (_) => const ErrorCustomToast('网络异常'));
               }
