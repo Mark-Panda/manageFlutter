@@ -23,7 +23,7 @@ login(String username, password, station) async {
     // print(decrypted);
     final prefs = await SharedPreferences.getInstance();
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
-    var requestPort = prefs.getString('requestPort') ?? '3000';
+    var requestPort = prefs.getString('requestPort') ?? '80';
     var url = 'http://$requestIp:$requestPort/api';
     Response response;
     Dio dio = Dio();
@@ -72,7 +72,7 @@ getUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('userToken');
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
-    var requestPort = prefs.getString('requestPort') ?? '3000';
+    var requestPort = prefs.getString('requestPort') ?? '80';
     var url = 'http://$requestIp:$requestPort/api';
     Response response;
     Dio dio = Dio();
@@ -110,7 +110,7 @@ logout() async {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('userToken');
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
-    var requestPort = prefs.getString('requestPort') ?? '3000';
+    var requestPort = prefs.getString('requestPort') ?? '80';
     var url = 'http://$requestIp:$requestPort/api';
     Dio dio = Dio();
     dio.options
@@ -145,7 +145,7 @@ getStations() async {
   try {
     final prefs = await SharedPreferences.getInstance();
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
-    var requestPort = prefs.getString('requestPort') ?? '3000';
+    var requestPort = prefs.getString('requestPort') ?? '80';
     var url = 'http://$requestIp:$requestPort/api';
     Response response;
     Dio dio = Dio();
@@ -184,7 +184,7 @@ feed(String workOrderNo, materialCode, materialName, unit, amount, lotNo,
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('userToken');
     var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
-    var requestPort = prefs.getString('requestPort') ?? '3000';
+    var requestPort = prefs.getString('requestPort') ?? '80';
     var url = 'http://$requestIp:$requestPort/internal';
     Response response;
     Dio dio = Dio();

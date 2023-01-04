@@ -18,7 +18,7 @@ class _SettingPageState extends State<SettingPage> {
   _load() async {
     final prefs = await SharedPreferences.getInstance();
     _ip = prefs.getString('requestIp') ?? '172.21.75.37';
-    _port = prefs.getString('requestPort') ?? '3000';
+    _port = prefs.getString('requestPort') ?? '80';
   }
 
   @override

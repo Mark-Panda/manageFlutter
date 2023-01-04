@@ -26,8 +26,6 @@ class _ProfilePageState extends State<ProfilePage> {
     String? userInfo = prefs.getString('userInfo');
     String? stationInfo = prefs.getString('stationInfo');
     if (userInfo != null) {
-      print('info' + userInfo);
-
       Map info = jsonDecode(userInfo.toString());
       _username = info['person']['user']['name'];
       _personname = info['person']['name'];
@@ -35,7 +33,6 @@ class _ProfilePageState extends State<ProfilePage> {
       _teamname =
           info['person']['team'] != null ? info['person']['team']['name'] : '_';
       if (stationInfo != null) {
-        print('info1111' + stationInfo);
         Map stationMap = jsonDecode(stationInfo);
         _workCenter = stationMap['centerName'];
       }

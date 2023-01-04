@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:manager_flutter/api/graphql_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:manager_flutter/api/restful_api.dart';
@@ -68,6 +69,7 @@ class _HomePageState extends State<HomePage> {
               return Image.asset('assets/images/404.jpeg');
             } else {
               if (loginState == 0) {
+                // return context.go('/login');
                 return const LoginPage();
               } else {
                 return Scaffold(

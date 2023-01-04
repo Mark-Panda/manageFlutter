@@ -6,6 +6,7 @@ import 'package:manager_flutter/screens/login/login_screen.dart';
 import 'package:manager_flutter/screens/scanner/scanner_feed_screen.dart';
 import 'package:manager_flutter/screens/scanner/scanner_screen.dart';
 import 'package:manager_flutter/screens/setting/setting_screen.dart';
+import 'package:manager_flutter/screens/splash/splash_screen.dart';
 import 'package:manager_flutter/screens/user/profile_screen.dart';
 
 /// The route configuration.
@@ -18,6 +19,7 @@ final GoRouter routerList = GoRouter(
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
           return const HomePage();
+          // return const SplashScreen();
         },
         routes: <RouteBase>[
           GoRoute(

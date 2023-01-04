@@ -23,7 +23,7 @@ getUserBaseInfo(String personId) async {
   final prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('userToken');
   var requestIp = prefs.getString('requestIp') ?? '172.21.75.37';
-  var requestPort = prefs.getString('requestPort') ?? '3000';
+  var requestPort = prefs.getString('requestPort') ?? '80';
 
   final GraphQLClient _client = getClient(requestIp, requestPort, token!);
   final QueryOptions options = QueryOptions(

@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   _load() async {
     final prefs = await SharedPreferences.getInstance();
     _ip = prefs.getString('requestIp') ?? '172.21.75.37';
-    _port = prefs.getString('requestPort') ?? '3000';
+    _port = prefs.getString('requestPort') ?? '80';
   }
 
   _getStationList() async {
@@ -51,12 +51,14 @@ class _LoginPageState extends State<LoginPage> {
           itemsJson.clear();
           for (var centerItem in stationList) {
             List stationItem = centerItem["workStations"];
-            itemsJson.add({
-              "code": stationItem[0]["code"],
-              "name": stationItem[0]["name"] + "【" + centerItem["name"] + "】",
-              "centerCode": centerItem["code"],
-              "centerName": centerItem["name"],
-            });
+            if (stationItem.isNotEmpty) {
+              itemsJson.add({
+                "code": stationItem[0]["code"],
+                "name": stationItem[0]["name"] + "【" + centerItem["name"] + "】",
+                "centerCode": centerItem["code"],
+                "centerName": centerItem["name"],
+              });
+            }
           }
         });
       }
@@ -268,6 +270,7 @@ class _LoginPageState extends State<LoginPage> {
           onPressed: () {
             showModalBottomSheet(
                 context: context,
+                isScrollControlled: true, //是否全屏
                 builder: (BuildContext context) {
                   return Form(
                     key: _listKey, // 设置globalKey，用于后面获取FormStat
@@ -276,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       children: [
                         const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
-                        // const SizedBox(height: 60),
+                        const SizedBox(height: 60),
                         buildIpTextField(),
                         const SizedBox(height: 30),
                         buildPortTextField(context), // 输入端口
@@ -323,7 +326,7 @@ class _LoginPageState extends State<LoginPage> {
                 String stationStr = jsonEncode(stationJson);
                 saveOperatInfo(stationStr);
                 // ignore: use_build_context_synchronously
-                context.go('/home');
+                context.push('/home');
               } else {
                 // 删除缓存
                 delAllInfo();
